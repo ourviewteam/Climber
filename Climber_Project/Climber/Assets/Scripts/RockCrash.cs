@@ -23,7 +23,6 @@ public class RockCrash : MonoBehaviour
 
             if (currentTime <= 0)
             {
-                Debug.Log("FAILURE LOOSER");
                 isEnter = false;
                 Destroy(this.gameObject);
             }

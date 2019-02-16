@@ -5,15 +5,17 @@ using UnityEngine;
 public class BasicGamePlay : MonoBehaviour
 {
     [Header("Range variables")]
-    const float max_Range = 0.50f;
-    const float min_Range = -0.15f;
+  //  const float max_Range = 0.50f;
+  //  const float min_Range = -0.15f;
 
     [Header("Speed variables")]
     public float verticalImpulse = 5f;
     public float muvementSpeed = 10f;
-    public float speed_ToAim = 200f;
+    public int FoultShootCount = 0;
+   // public float speed_ToAim = 200f;
 
     [Header("Other")]
+    public SO_Instrument Instrument;
     public Rigidbody2D player_Rigidbody2D;
     public GameObject AimLine;
     public bool PlayerShoted = false;
@@ -25,12 +27,15 @@ public class BasicGamePlay : MonoBehaviour
     private void Start()
     {
         player_Rigidbody2D = GameObject.FindGameObjectWithTag("Player").GetComponent<Rigidbody2D>();
+        transform.localScale = new Vector3(Instrument.aim_Distance, transform.localScale.y, transform.localScale.z);
     }
 
     private void Update()
     {
-        //Debug.Log(transform.rotation);
-
+        if (FoultShootCount == Instrument.shoot_Count)
+        {
+            GameOver();
+        }
         if (Input.GetMouseButtonDown(0))
         {
             PlayerShoted = CheckTheAim();
@@ -45,19 +50,19 @@ public class BasicGamePlay : MonoBehaviour
             
             if (changeDirection)
             {
-                transform.Rotate(0, 0, min_Range * speed_ToAim * 3 * Time.deltaTime);
+                transform.Rotate(0, 0, Instrument.min_Angle_Range * Instrument.rangeMovingspeed * 3 * Time.deltaTime);
             }
             else
             {
-                transform.Rotate(0, 0, max_Range * speed_ToAim * Time.deltaTime);
+                transform.Rotate(0, 0, Instrument.max_Angle_Range * Instrument.rangeMovingspeed * Time.deltaTime);
                 
             }
 
-            if (transform.rotation.z >= max_Range)
+            if (transform.rotation.z >= Instrument.max_Angle_Range)
             {
                 changeDirection = true;
             }
-            else if (transform.rotation.z <= min_Range)
+            else if (transform.rotation.z <= Instrument.min_Angle_Range)
             {
                 changeDirection = false;
             }
@@ -70,12 +75,10 @@ public class BasicGamePlay : MonoBehaviour
             if (((playerPosition.position.x - hit.collider.transform.position.x) <= 0) && (IsFacingRight))
             {
                 player_Rigidbody2D.transform.Translate(transform.right * muvementSpeed * Time.deltaTime);
-                //
             }
             else if (((playerPosition.position.x - hit.collider.transform.position.x) >= 0) && (!IsFacingRight))
             {
                 player_Rigidbody2D.transform.Translate(-transform.right * muvementSpeed * Time.deltaTime);
-                //transform.rotation = new Quaternion(0, 0, -0.15f, -1);
             }
             else
             {
@@ -116,8 +119,14 @@ public class BasicGamePlay : MonoBehaviour
         }
         else
         {
+            FoultShootCount++;
             return false;
         }
+    }
+
+    public void GameOver()
+    {
+        Debug.Log("Game Is Over");
     }
 
 
