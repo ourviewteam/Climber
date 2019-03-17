@@ -10,13 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 61977a0e49c75ae4c9b3b10c8008d71d, type: 3}
-  m_Name: TestInstrument
+  m_Name: Bow
   m_EditorClassIdentifier: 
   max_Angle_Range: 0.5
   min_Angle_Range: -0.15
   shoot_Count: 1
-  aim_Distance: 5
-  rangeMovingspeed: 200
-  instrument_Body: {fileID: 0}
+  aim_Distance: 3
+  rangeMovingspeed: 5
+  instrument_Body: {fileID: 21300000, guid: d27f4b07a20e8f94698320477f4fc1ab, type: 3}
   insturment_Rope: {fileID: 0}
-  instrument_Hock: {fileID: 0}
+  instrument_Hock: {fileID: 1296472280152515318, guid: 1f466f75d00f95140beecfc10aafd654,
+    type: 3}

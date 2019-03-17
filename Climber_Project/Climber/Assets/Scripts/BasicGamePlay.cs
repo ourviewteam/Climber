@@ -4,124 +4,83 @@ using UnityEngine;
 
 public class BasicGamePlay : MonoBehaviour
 {
-    [Header("Range variables")]
-  //  const float max_Range = 0.50f;
-  //  const float min_Range = -0.15f;
-
+    
     [Header("Speed variables")]
-    public float verticalImpulse = 5f;
-    public float muvementSpeed = 10f;
+    public float muvementSpeed = 5f;
+    public float AmmoSpeed = 20f;
     public int FoultShootCount = 0;
-   // public float speed_ToAim = 200f;
 
     [Header("Other")]
     public SO_Instrument Instrument;
+    public PlayerMuvement PM;
     public Rigidbody2D player_Rigidbody2D;
+    public SpriteRenderer Gun_body;
     public GameObject AimLine;
+    public GameObject Ammo;
     public bool PlayerShoted = false;
     public bool changeDirection = false;
     public bool IsFacingRight = true;
+    public Transform FirePoint;
+    public enemy Enemy;
+    public Quaternion startRotation;
 
-    RaycastHit2D hit;
+    public bool generalState = false;
 
     private void Start()
     {
         player_Rigidbody2D = GameObject.FindGameObjectWithTag("Player").GetComponent<Rigidbody2D>();
-        transform.localScale = new Vector3(Instrument.aim_Distance, transform.localScale.y, transform.localScale.z);
+        PM = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerMuvement>();
+        AimLine.transform.localScale = Instrument.gun_scale;
+        startRotation = transform.localRotation;
+        Gun_body.sprite = Instrument.instrument_Body;
+        Ammo = Instrument.instrument_Hock;
     }
 
-    private void Update()
+
+    private void FixedUpdate()
     {
-        if (FoultShootCount == Instrument.shoot_Count)
-        {
-            GameOver();
-        }
-        if (Input.GetMouseButtonDown(0))
-        {
-            PlayerShoted = CheckTheAim();
-            
-
-        }
-
+        
         // run script to animate the aim
         if (!PlayerShoted)
         {
-            AimLine.SetActive(true);
-            
-            if (changeDirection)
-            {
-                transform.Rotate(0, 0, Instrument.min_Angle_Range * Instrument.rangeMovingspeed * 3 * Time.deltaTime);
-            }
-            else
-            {
-                transform.Rotate(0, 0, Instrument.max_Angle_Range * Instrument.rangeMovingspeed * Time.deltaTime);
-                
-            }
+            StartAimAnimation();
 
-            if (transform.rotation.z >= Instrument.max_Angle_Range)
+            if (Input.GetMouseButtonDown(0))
             {
-                changeDirection = true;
+                PlayerShoted = true;
+                Shoot();
             }
-            else if (transform.rotation.z <= Instrument.min_Angle_Range)
+        }
+    }
+
+    public void StartAimAnimation()
+    {
+        AimLine.SetActive(true);
+        if (changeDirection)
+        {
+            transform.Rotate(0, 0, Instrument.min_Angle_Range * Instrument.rangeMovingspeed * 3);
+            if (transform.rotation.z <= Instrument.min_Angle_Range)
             {
                 changeDirection = false;
             }
         }
         else
         {
-            Transform playerPosition = player_Rigidbody2D.transform;
-            AimLine.SetActive(false);
-
-            if (((playerPosition.position.x - hit.collider.transform.position.x) <= 0) && (IsFacingRight))
+            transform.Rotate(0, 0, Instrument.max_Angle_Range * Instrument.rangeMovingspeed);
+            if (transform.rotation.z >= Instrument.max_Angle_Range)
             {
-                player_Rigidbody2D.transform.Translate(transform.right * muvementSpeed * Time.deltaTime);
-            }
-            else if (((playerPosition.position.x - hit.collider.transform.position.x) >= 0) && (!IsFacingRight))
-            {
-                player_Rigidbody2D.transform.Translate(-transform.right * muvementSpeed * Time.deltaTime);
-            }
-            else
-            {
-                playerPosition.localScale = new Vector3(-playerPosition.localScale.x, playerPosition.localScale.y, playerPosition.localScale.z);
-                IsFacingRight = !IsFacingRight;
-                if (IsFacingRight)
-                {
-                    transform.rotation = new Quaternion(0, 0, -0.15f, 1);
-                }
-                else
-                {
-                    transform.rotation = new Quaternion(0, 0, -0.15f, -1);
-                }
-                PlayerShoted = false;
+                changeDirection = true;
             }
         }
+
+        
+        
     }
 
-    public bool CheckTheAim ()
-    {
-        if (IsFacingRight)
-        {
-            hit = Physics2D.Raycast(transform.position, transform.right, 1000f);
-            Debug.DrawLine(transform.position, hit.point, Color.blue, 0);
-        } else
-        {
-            hit = Physics2D.Raycast(transform.position, -transform.right, 1000f);
-            Debug.DrawLine(transform.position, hit.point, Color.blue, 0);
-        }
-
-        PlayerShoted = true;
-
-
-        if ((hit.collider != null) && (hit.collider.tag == "Rock"))
-        {
-            player_Rigidbody2D.AddForce(new Vector2(0, verticalImpulse), ForceMode2D.Impulse);
-            return true;
-        }
-        else
-        {
-            FoultShootCount++;
-            return false;
-        }
+    public void Shoot()
+    { 
+        AimLine.SetActive(false);
+        StartCoroutine (ShootEnemy());
     }
 
     public void GameOver()
@@ -129,5 +88,46 @@ public class BasicGamePlay : MonoBehaviour
         Debug.Log("Game Is Over");
     }
 
+    IEnumerator ShootEnemy()
+    {
+        for (int i = 0; i< Instrument.shoot_Count; i++)
+        {
+            Instantiate(Ammo, FirePoint.position,  transform.rotation);
+            yield return new WaitForSeconds(0.1f);
+        }
 
+        Enemy = GameObject.FindGameObjectWithTag("enemy").GetComponent<enemy>();
+        if (!generalState)
+        {
+            Enemy.ShootPlayer();
+            //
+            PlayerShoted = false;
+        }
+        else
+        {
+            if (Enemy.health <= 0)
+            {
+                if (player_Rigidbody2D.gameObject.transform.position.x < Enemy.transform.position.x)
+                {
+                    PM.enemyPosition = Enemy.transform.position.x;
+                    PM._state = PlayerMuvement.MuvementState.right;  
+                }
+                else
+                {
+                    PM.enemyPosition = Enemy.transform.position.x;
+                    PM._state = PlayerMuvement.MuvementState.left;
+                }
+                Enemy.KillTheEnemy();
+                
+            }
+
+            generalState = false;
+            PlayerShoted = false;
+        }
+    }
+
+    public void FireState(bool state)
+    {
+        if (state == true) generalState = true;
+    }
 }

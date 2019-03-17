@@ -5,6 +5,12 @@ TagManager:
   serializedVersion: 2
   tags:
   - Rock
+  - AIM
+  - block
+  - head
+  - bullet
+  - enemy
+  - gun
   layers:
   - Default
   - TransparentFX

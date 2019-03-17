@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 61977a0e49c75ae4c9b3b10c8008d71d, type: 3}
+  m_Name: Pistolet
+  m_EditorClassIdentifier: 
+  max_Angle_Range: 0.5
+  min_Angle_Range: -0.15
+  shoot_Count: 1
+  gun_scale: {x: 0.05, y: 0.05, z: 0}
+  rangeMovingspeed: 4
+  instrument_Body: {fileID: 21300000, guid: c1d58efa6852ead4cb29a14dae1c9fea, type: 3}
+  insturment_Rope: {fileID: 0}
+  instrument_Hock: {fileID: 1296472280152515318, guid: 1f466f75d00f95140beecfc10aafd654,
+    type: 3}

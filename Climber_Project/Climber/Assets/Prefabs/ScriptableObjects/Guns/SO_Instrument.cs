@@ -9,12 +9,11 @@ public class SO_Instrument : ScriptableObject
     public float max_Angle_Range;
     public float min_Angle_Range;
     public int shoot_Count;
-    public float aim_Distance;
+    public Vector3 gun_scale;
     public float rangeMovingspeed;
 
     [Header("The textures ;P")]
     public Sprite instrument_Body;
     public Sprite insturment_Rope;
-    public Sprite instrument_Hock;
-
+    public GameObject instrument_Hock;
 }
