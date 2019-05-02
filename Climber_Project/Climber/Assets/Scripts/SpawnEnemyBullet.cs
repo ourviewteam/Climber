@@ -5,15 +5,20 @@ using UnityEngine;
 public class SpawnEnemyBullet : MonoBehaviour
 {
     public GameObject Player;
-    // Start is called before the first frame update
+    public Vector3 SpeedBulletScale;
+    public float bulletSpeed = 15;
+    public Vector3 toScale;
+   
     void Start()
     {
+        toScale = transform.localScale;
+        transform.localScale = Vector3.zero;
         Player = GameObject.FindGameObjectWithTag("Player");
     }
 
     private void Update()
     {
-        transform.position = Vector3.MoveTowards(transform.position, Player.transform.position, 20f * Time.deltaTime);
+        transform.position = Vector3.MoveTowards(transform.position, Player.transform.position, bulletSpeed * Time.deltaTime);
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -22,7 +27,14 @@ public class SpawnEnemyBullet : MonoBehaviour
         if (collision.gameObject.CompareTag("Player"))
         {
             Destroy(this.gameObject);
-            Debug.Log("YOU Are dead!");
+        }
+    }
+
+    private void FixedUpdate()
+    {
+        if (transform.localScale.x < toScale.x)
+        {
+            transform.localScale += SpeedBulletScale * Time.deltaTime;
         }
     }
 }

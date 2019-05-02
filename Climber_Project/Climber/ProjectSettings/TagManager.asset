@@ -11,6 +11,8 @@ TagManager:
   - bullet
   - enemy
   - gun
+  - floor
+  - bmusic
   layers:
   - Default
   - TransparentFX

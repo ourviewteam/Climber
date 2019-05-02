@@ -10,7 +10,8 @@ public class SpawnBullet : MonoBehaviour
     public enemy Enemy;
     public GameObject particleSystem;
     public Vector3 SpeedBulletScale;
-    public Vector3 toScale; 
+    public Vector3 toScale;
+    private bool headshot = false;
 
     private void Awake()
     {
@@ -33,26 +34,26 @@ public class SpawnBullet : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-       
-        if (collision.gameObject.CompareTag("enemy"))
+        if (collision.tag == "enemy")
         {
-            Enemy = GameObject.FindGameObjectWithTag("enemy").GetComponent<enemy>();
+           // BGP.RunAudio(1);
             Instantiate(particleSystem, transform.position, transform.rotation);
-            Destroy(this.gameObject);
-            Enemy.health -= 5;
+            BGP.Enemy.health -= 5;
             BGP.FireState(true);
-        }
-        else if (collision.gameObject.CompareTag("head"))
-        {
-            Enemy = GameObject.FindGameObjectWithTag("enemy").GetComponent<enemy>();
-            Instantiate(particleSystem, transform.position, transform.rotation);
             Destroy(this.gameObject);
-            Enemy.health -= 10;
-            Debug.Log("This is a HEADSHOT");
-            BGP.FireState(true);
         }
-        else if ((collision != null) && (!collision.gameObject.CompareTag("gun")) && (!collision.gameObject.CompareTag("block")))
+        //else if (collision.tag == "head")
+        //{
+        //    headshot = true;
+        //    BGP.RunAudio(1);
+        //    Instantiate(particleSystem, transform.position, transform.rotation);
+        //    BGP.Enemy.health -= 10;
+        //    BGP.FireState(true);
+        //    Destroy(this.gameObject);
+        //}
+        else if (collision.tag == "block")
         {
+           // BGP.RunAudio(2);
             Destroy(this.gameObject);
             BGP.FireState(false);
         }
